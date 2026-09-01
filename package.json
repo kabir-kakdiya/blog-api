@@ -1,0 +1,37 @@
+{
+  "name": "blog-api",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "tsx watch --env-file=.env src/index.ts",
+    "start": "tsc && node --env-file=.env dist/index.js",
+    "codegen": "kysely-generate --dialect=postgres-js --camel-case"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devEngines": {
+    "packageManager": {
+      "name": "pnpm",
+      "version": "12.2.1",
+      "onFail": "download"
+    }
+  },
+  "packageManager": "pnpm@12.2.1",
+  "type": "module",
+  "dependencies": {
+    "express": "^5.2.1",
+    "kysely": "^0.29.5",
+    "kysely-postgres-js": "^4.0.0",
+    "postgres": "^3.4.9"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.6",
+    "@types/node": "^26.4.0",
+    "kysely-ctl": "^0.21.0",
+    "kysely-generate": "^0.22.0",
+    "tsx": "^4.23.13",
+    "typescript": "^7.0.2"
+  }
+}
