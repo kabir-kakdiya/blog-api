@@ -14,7 +14,7 @@
   "devEngines": {
     "packageManager": {
       "name": "pnpm",
-      "version": "12.2.1",
+      "version": "12.3.2",
       "onFail": "download"
     }
   },
@@ -22,13 +22,14 @@
   "type": "module",
   "dependencies": {
     "express": "^5.2.1",
+    "jsonwebtoken": "^9.0.3",
     "kysely": "^0.29.5",
     "kysely-postgres-js": "^4.0.0",
     "postgres": "^3.4.9"
   },
   "devDependencies": {
     "@types/express": "^5.0.6",
-    "@types/node": "^26.4.0",
+    "@types/node": "^26.4.1",
     "kysely-ctl": "^0.21.0",
     "kysely-generate": "^0.22.0",
     "tsx": "^4.23.13",
