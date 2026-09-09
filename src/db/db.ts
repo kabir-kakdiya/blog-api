@@ -5,7 +5,7 @@ import { type DB } from 'kysely-generate'
 
 const db = new Kysely<DB>({
     dialect: new PostgresJSDialect({
-        postgres: postgres(process.env.DATABASE_URL!, { max: Number(process.env.DB_MAX_CONN!) }),
+        postgres: postgres(process.env.DATABASE_URL!, { max: Number(process.env.DB_CONN!) }),
     }),
     plugins: [new CamelCasePlugin()]
 })

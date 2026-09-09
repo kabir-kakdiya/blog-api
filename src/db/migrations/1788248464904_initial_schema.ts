@@ -2,6 +2,15 @@ import { sql, type Kysely, CreateTableBuilder } from 'kysely'
 
 // `any` is required here since migrations should be frozen in time. alternatively, keep a "snapshot" db interface.
 export async function up(db: Kysely<any>): Promise<void> {
+	await sql`
+		CREATE OR REPLACE FUNCTION set_updated_at()
+		RETURNS TRIGGER AS $$
+		BEGIN
+			NEW.updated_at = CURRENT_TIMESTAMP;
+			RETURN NEW;
+		END;
+		$$ LANGUAGE plpgsql;
+	`.execute(db)
 
 	await withTimestamps(
 		db.schema.createTable('user')
@@ -12,6 +21,7 @@ export async function up(db: Kysely<any>): Promise<void> {
 			.addColumn("bio", "varchar(100)")
 	)
 		.execute()
+	await addUpdatedAtTrigger(db, "user")
 
 	await withTimestamps(db.schema.createTable('social')
 		.addColumn("user_id", "bigint", col => col.references('user.id').onDelete('cascade').primaryKey())
@@ -24,6 +34,7 @@ export async function up(db: Kysely<any>): Promise<void> {
 			OR linkedin IS NOT NULL
 			`))
 		.execute()
+	await addUpdatedAtTrigger(db, "social")
 
 	await withTimestamps(db.schema.createTable('article')
 		.addColumn("id", "bigint", col => col.generatedAlwaysAsIdentity().primaryKey())
@@ -32,7 +43,7 @@ export async function up(db: Kysely<any>): Promise<void> {
 		.addColumn("text", "text", col => col.notNull())
 		.addColumn("author", "bigint", col => col.references('user.id').notNull().onDelete('cascade')))
 		.execute()
-
+	await addUpdatedAtTrigger(db, "article")
 
 	await withTimestamps(db.schema.createTable("comment")
 		.addColumn("id", "bigint", col => col.generatedAlwaysAsIdentity().primaryKey())
@@ -41,17 +52,19 @@ export async function up(db: Kysely<any>): Promise<void> {
 		.addColumn("author", "bigint", col => col.references("user.id").notNull().onDelete('cascade'))
 		.addColumn("deleted_at", "timestamptz"))
 		.execute()
+	await addUpdatedAtTrigger(db, "comment")
 
 	await withTimestamps(db.schema.createTable("tag")
 		.addColumn("id", "bigint", col => col.generatedAlwaysAsIdentity().primaryKey())
 		.addColumn("name", "varchar(200)", col => col.notNull()))
 		.execute()
-
+	await addUpdatedAtTrigger(db, "tag")
 	await withTimestamps(db.schema.createTable("article_tag")
 		.addColumn("tag_id", "bigint", col => col.references("tag.id").onDelete('cascade'))
 		.addColumn("article_id", "bigint", col => col.references('article.id').onDelete('cascade'))
 		.addPrimaryKeyConstraint("article_tags_primary_key", ["article_id", "tag_id"]))
 		.execute()
+	await addUpdatedAtTrigger(db, "article_tag")
 
 	await withTimestamps(db.schema.createTable('media')
 		.addColumn("id", "bigint", col => col.generatedAlwaysAsIdentity().primaryKey())
@@ -66,6 +79,7 @@ export async function up(db: Kysely<any>): Promise<void> {
 			`) // num_nonnulls is a postgres built-in function
 	)
 		.execute()
+	await addUpdatedAtTrigger(db, "media")
 }
 
 // `any` is required here since migrations should be frozen in time. alternatively, keep a "snapshot" db interface.
@@ -74,8 +88,17 @@ export async function down(db: Kysely<any>): Promise<void> {
 	await db.schema.dropTable("user").execute()
 }
 
-export function withTimestamps(qb: CreateTableBuilder<any, any>) {
+function withTimestamps(qb: CreateTableBuilder<any, any>) {
 	return qb
 		.addColumn('created_at', 'timestamptz', (col) => col.defaultTo(sql`CURRENT_TIMESTAMP`).notNull())
 		.addColumn('updated_at', 'timestamptz', (col) => col.defaultTo(sql`CURRENT_TIMESTAMP`).notNull());
+}
+
+async function addUpdatedAtTrigger(db: Kysely<any>, tableName: string) {
+	await sql`
+		CREATE TRIGGER ${sql.raw(`${tableName}_updated_at`)}
+		BEFORE UPDATE ON ${sql.table(tableName)}
+		FOR EACH ROW
+		EXECUTE FUNCTION set_updated_at();
+	`.execute(db)
 }

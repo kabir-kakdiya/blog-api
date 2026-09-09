@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "tsx watch --env-file=.env src/index.ts",
     "start": "tsc && node --env-file=.env dist/index.js",
-    "codegen": "kysely-generate --dialect=postgres-js --camel-case"
+    "codegen": "kysely-generate --dialect=postgres-js --camel-case",
+    "migrate":"kysely migrate latest"
   },
   "keywords": [],
   "author": "",
@@ -14,11 +15,11 @@
   "devEngines": {
     "packageManager": {
       "name": "pnpm",
-      "version": "12.3.2",
-      "onFail": "download"
+      "version": "12.3.4",
+      "onFail": "ignore"
     }
   },
-  "packageManager": "pnpm@12.2.1",
+  "packageManager": "pnpm@12.3.4",
   "type": "module",
   "dependencies": {
     "express": "^5.2.1",
