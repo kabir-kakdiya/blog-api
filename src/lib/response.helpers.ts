@@ -1,6 +1,6 @@
 import type { Response } from "express";
 
-interface ApiSuccessResponse<T> {
+export interface ApiSuccessResponse<T> {
     success: true;
     message: string;
     data: T;

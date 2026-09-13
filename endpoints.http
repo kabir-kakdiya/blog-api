@@ -1,8 +1,13 @@
-POST http://localhost:4000/api/v1/user/signup
+@PORT = 5500
+@BASEURL = http://localhost:{{PORT}}
+
+@PREFIX = api/v1
+@URL = {{BASEURL}}/{{PREFIX}}
+
+POST {{URL}}/user/signup
 Content-Type: application/json
 
 {
-    "fullName":"Kabir",
-    "email":"kabir.coderkube1212@gmail.com",
-    "password":"12344"
+    "fullName": "Kabir",
+    "email": "kabir2@gmail.com"
 }
