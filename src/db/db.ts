@@ -1,7 +1,7 @@
 import { CamelCasePlugin, Kysely } from 'kysely'
 import { PostgresJSDialect } from 'kysely-postgres-js'
 import postgres from 'postgres'
-import { type DB } from 'kysely-generate'
+import { type DB } from './types.ts'
 
 const db = new Kysely<DB>({
     dialect: new PostgresJSDialect({

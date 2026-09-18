@@ -1,39 +1,39 @@
 import type { Response } from "express";
+import { flatten, type BaseIssue } from "valibot";
 
-export interface ApiSuccessResponse<T> {
-    success: true;
+export interface ApiResponse<T = unknown> {
+    success: boolean;
     message: string;
-    data: T;
+    data?: T;
+    errors?: Record<string, string> | unknown;
 }
 
-interface ApiErrorResponse {
-    success: false;
-    message: string;
-    error?: string;
+/**
+ * Sends a successful JSON response (Default status 200 OK or 201 Created)
+ */
+export function sendSuccess<T>(res: Response, data?: T, message = "Operation successful", statusCode = 200) {
+    const body: ApiResponse<T> = { success: true, message, }
+    if (data !== undefined) {
+        body.data = data
+    }
+    return res.status(statusCode).json(body);
 }
 
-export function sendSuccess<Type>(
-    res: Response,
-    data: Type,
-    message = "success",
-    status = 200
-): Response<ApiSuccessResponse<Type>> {
-    return res.status(status).json({
-        success: true,
-        data,
-        message
-    });
-}
-
-export function sendError(
-    res: Response,
-    message = "Something went wrong",
-    status = 500,
-    error?: string
-): Response<ApiErrorResponse> {
-    return res.status(status).json({
+/**
+ * Sends a generic error response (Default status 400 Bad Request)
+ */
+export function sendError(res: Response, message = "An error occurred", statusCode = 400, errors?: unknown) {
+    return res.status(statusCode).json({
         success: false,
         message,
-        error,
-    });
+        errors,
+    } satisfies ApiResponse);
+}
+
+/**
+ * Converts Valibot issues into a clean `{ [field]: "error message" }` map
+ */
+export function sendValidationError(res: Response, issues: [BaseIssue<unknown>, ...BaseIssue<unknown>[]], message = "Validation failed") {
+    const { nested } = flatten(issues);
+    return sendError(res, message, 422, nested);
 }

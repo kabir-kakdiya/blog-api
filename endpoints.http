@@ -1,4 +1,4 @@
-@PORT = 5500
+@PORT = 5000
 @BASEURL = http://localhost:{{PORT}}
 
 @PREFIX = api/v1
@@ -9,5 +9,6 @@ Content-Type: application/json
 
 {
     "fullName": "Kabir",
-    "email": "kabir2@gmail.com"
+    "email": "kabir@gmail.com",
+    "password":"Admin@123"
 }
