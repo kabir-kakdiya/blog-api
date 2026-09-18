@@ -12,3 +12,11 @@ Content-Type: application/json
     "email": "kabir@gmail.com",
     "password":"Admin@123"
 }
+###
+POST {{URL}}/user/signin
+Content-Type: application/json
+
+{
+    "email": "kabir@gmail.com",
+    "password":"Admin@123"
+}
