@@ -10,13 +10,16 @@ Content-Type: application/json
 {
     "fullName": "Kabir",
     "email": "kabir@gmail.com",
-    "password":"Admin@123"
+    "password":"Adm3"
 }
 ###
-POST {{URL}}/user/signin
+POST {{URL}}/user/signins
 Content-Type: application/json
 
 {
     "email": "kabir@gmail.com",
     "password":"Admin@123"
 }
+
+###
+GET {{BASEURL}}/dasd

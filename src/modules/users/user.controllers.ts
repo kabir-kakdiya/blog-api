@@ -18,7 +18,7 @@ export const login: BodyHandler<LoginInput> = async (req, res) => {
   const [user] = await db.selectFrom("user").selectAll()
     .where("email", "=", email)
     .execute()
-
+  // throw new Error("Custom error")
   if (!user || password !== user.password) return sendError(res, "Invalid Credentials", 404)
 
   return sendSuccess(res, user, "Logged in successfully", 200)
