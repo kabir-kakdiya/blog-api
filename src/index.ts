@@ -5,6 +5,13 @@ import apiV1Router from "./routes/index.ts";
 
 const app: Express = express()
 
+let shuttingDown = false
+
+app.get('/health', (_, res) => {
+    if (shuttingDown) return res.status(503).send("shutting down");
+    res.status(200).send("ok")
+});
+
 app.use(express.json())
 
 app.use('/api/v1', apiV1Router)
@@ -18,32 +25,26 @@ const server = app.listen(port, () => {
     console.log(`Server is listening on port ${port}`)
 })
 
-const gracefulShutdown = (signal) => {
-  console.log(`\nReceived ${signal}. Starting graceful shutdown...`);
+const gracefulShutdown = (signal: Uppercase<'sigterm' | 'sigint'>) => {
+    shuttingDown = true;
+    console.log(`Received ${signal}. Starting graceful shutdown...`)
 
-  // 1. Stop the server from accepting new requests
-  server.close(() => {
-    console.log('HTTP server closed. All ongoing requests finished.');
+    // give the LB time to notice the 503 and stop routing
+    setTimeout(() => {
+        server.close(() => process.exit(0))
+    }, 5000)
 
-    // 2. Close database connections (Simulation)
-    console.log('Closing database connections...');
-    // db.close()
-
-    // 3. Exit the process cleanly
-    console.log('Process exiting cleanly.');
-    process.exit(0);
-  });
-
-  // Optional: Force shutdown if it takes too long
-  setTimeout(() => {
-    console.error('Could not close connections in time, forcefully shutting down');
-    process.exit(1);
-  }, 10000); // 10 seconds timeout
+    // Optional: Force shutdown if it takes too long
+    setTimeout(() => {
+        console.error('Could not close connections in time, forcefully shutting down');
+        process.exit(1);
+    }, 10000); // 10 seconds timeout
 };
 
 // Listen for system signals
 process.on('SIGTERM', () => gracefulShutdown('SIGTERM'));
 process.on('SIGINT', () => gracefulShutdown('SIGINT'));
+
 process.on("unhandledRejection", (reason) => {
     console.error("Unhandled rejection:", reason);
 });
