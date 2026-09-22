@@ -25,14 +25,16 @@ const server = app.listen(port, () => {
     console.log(`Server is listening on port ${port}`)
 })
 
-const gracefulShutdown = (signal: Uppercase<'sigterm' | 'sigint'>) => {
+function gracefulShutdown(signal: Uppercase<'sigterm' | 'sigint'>) {
     shuttingDown = true;
     console.log(`Received ${signal}. Starting graceful shutdown...`)
 
     // give the LB time to notice the 503 and stop routing
     setTimeout(() => {
-        server.close(() => process.exit(0))
-    }, 5000)
+        server.close(() => {
+            process.exit(0)
+        })
+    }, 3000)
 
     // Optional: Force shutdown if it takes too long
     setTimeout(() => {

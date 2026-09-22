@@ -1,4 +1,5 @@
 import db from "../../db/db.ts";
+import { AppError } from "../../lib/Errors.ts";
 import { sendError, sendSuccess } from "../../lib/response.helpers.ts";
 import type { LoginInput, SignupInput } from "../../schemas/user.schema.ts";
 import type { BodyHandler } from '../../types/express.ts';
@@ -19,7 +20,7 @@ export const login: BodyHandler<LoginInput> = async (req, res) => {
     .where("email", "=", email)
     .execute()
   // throw new Error("Custom error")
-  if (!user || password !== user.password) return sendError(res, "Invalid Credentials", 404)
+  if (!user || password !== user.password) throw new AppError("Invalid credentials", 404)
 
   return sendSuccess(res, user, "Logged in successfully", 200)
 }

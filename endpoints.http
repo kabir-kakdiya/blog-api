@@ -4,6 +4,9 @@
 @PREFIX = api/v1
 @URL = {{BASEURL}}/{{PREFIX}}
 
+###
+GET {{BASEURL}}/health
+###
 POST {{URL}}/user/signup
 Content-Type: application/json
 
@@ -13,13 +16,10 @@ Content-Type: application/json
     "password":"Adm3"
 }
 ###
-POST {{URL}}/user/signins
+POST {{URL}}/user/signin
 Content-Type: application/json
 
 {
     "email": "kabir@gmail.com",
     "password":"Admin@123"
 }
-
-###
-GET {{BASEURL}}/dasd
