@@ -73,9 +73,9 @@ export interface User {
   createdAt: Generated<Timestamp>;
   email: string;
   fullName: string;
+  hash: string;
   id: Generated<Int8>;
   imageId: Int8 | null;
-  password: string;
   updatedAt: Generated<Timestamp>;
 }
 

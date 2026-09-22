@@ -11,15 +11,15 @@ POST {{URL}}/user/signup
 Content-Type: application/json
 
 {
-    "fullName": "Kabir",
-    "email": "kabir@gmail.com",
-    "password":"Adm3"
+    "fullName": "Namra",
+    "email": "namra@gmail.com",
+    "password":"Admin@1234"
 }
 ###
 POST {{URL}}/user/signin
 Content-Type: application/json
 
 {
-    "email": "kabir@gmail.com",
-    "password":"Admin@123"
+    "email": "namra@gmail.com",
+    "password":"Admn@123"
 }

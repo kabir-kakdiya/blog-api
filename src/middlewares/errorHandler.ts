@@ -9,7 +9,7 @@ const errorHandler: ErrorRequestHandler = (err, req, res, next) => {
     const statusCode = err.statusCode ?? 500;
     const isOperational = err instanceof AppError && err.isOperational;
 
-    if (isOperational) {
+    if (!isOperational) {
         console.error(`[${req.method}] ${req.originalUrl} ->`, err);
     }
 

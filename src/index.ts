@@ -2,6 +2,7 @@ import express, { type Express } from "express";
 import errorHandler from "./middlewares/errorHandler.ts";
 import notFoundHandler from "./middlewares/notFoundHandler.ts";
 import apiV1Router from "./routes/index.ts";
+import db from "./db/db.ts";
 
 const app: Express = express()
 
@@ -14,7 +15,7 @@ app.get('/health', (_, res) => {
 
 app.use(express.json())
 
-app.use('/api/v1', apiV1Router)
+app.use('/api/v1', apiV1Router);
 
 app.use(notFoundHandler);
 app.use(errorHandler);
@@ -31,14 +32,16 @@ function gracefulShutdown(signal: Uppercase<'sigterm' | 'sigint'>) {
 
     // give the LB time to notice the 503 and stop routing
     setTimeout(() => {
-        server.close(() => {
+        server.close(async () => {
+            await db.destroy()
             process.exit(0)
         })
     }, 3000)
 
     // Optional: Force shutdown if it takes too long
-    setTimeout(() => {
+    setTimeout(async () => {
         console.error('Could not close connections in time, forcefully shutting down');
+        await db.destroy();
         process.exit(1);
     }, 10000); // 10 seconds timeout
 };

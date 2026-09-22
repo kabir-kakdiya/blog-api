@@ -17,7 +17,7 @@ export async function up(db: Kysely<any>): Promise<void> {
 			.addColumn("id", "bigint", col => col.generatedAlwaysAsIdentity().primaryKey())
 			.addColumn("full_name", "varchar(50)", col => col.notNull())
 			.addColumn("email", "varchar(200)", col => col.notNull().unique())
-			.addColumn("password", "varchar(500)", col => col.notNull())
+			.addColumn("hash", "varchar(1000)", col => col.notNull().unique())
 			.addColumn("bio", "varchar(100)")
 	)
 		.execute()

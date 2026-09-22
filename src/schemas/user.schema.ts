@@ -1,6 +1,5 @@
 import * as v from 'valibot'
 
-
 export const userSchema = v.object({
     fullName: v.pipe(v.string("Full name is required"), v.trim(), v.minLength(2, "Name must be atleast 2 characters")),
     email: v.pipe(v.string("Email is required"), v.email("Please provide a valid email")),
