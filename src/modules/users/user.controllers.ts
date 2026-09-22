@@ -7,15 +7,20 @@ import type { LoginInput, SignupInput } from "../../schemas/user.schema.ts";
 import type { BodyHandler } from '../../types/express.ts';
 
 export const signup: BodyHandler<SignupInput> = async (req, res) => {
-  const { fullName, email, password } = req.body;
+  const { fullName, email, password, bio, ...socials } = req.body;
   const hash = await argon2.hash(password)
 
   const user = await db.insertInto("user").values({
-    fullName, email, hash
-  }).returning(["id", "fullName", "email", "createdAt"]).executeTakeFirstOrThrow()
+    fullName, email, hash, bio
+  }).returning(["id", "fullName", "email", "createdAt", "bio"]).executeTakeFirstOrThrow()
+
+  let userSocial = {};
+  if (Object.keys(socials).length) {
+    userSocial = await db.insertInto("social").values({ userId: user.id, ...socials }).returning(["twitter", "facebook", "linkedin"]).executeTakeFirstOrThrow()
+  }
 
   const token = generateToken(user.id)
-  return sendSuccess(res, { ...user, token }, "Account created", 201)
+  return sendSuccess(res, { ...user, token, ...userSocial }, "Account created", 201)
 }
 
 export const login: BodyHandler<LoginInput> = async (req, res) => {
@@ -29,3 +34,5 @@ export const login: BodyHandler<LoginInput> = async (req, res) => {
 
   return sendSuccess(res, { ...user, token }, "Logged in successfully", 200)
 }
+
+

@@ -11,9 +11,13 @@ POST {{URL}}/user/signup
 Content-Type: application/json
 
 {
-    "fullName": "Namra",
-    "email": "namra@gmail.com",
-    "password":"Admin@1234"
+    "fullName": "Kabir",
+    "email": "kabir@gmail.com",
+    "password":"Admin@123",
+    "bio":"A backend dev",
+    "twitter":"twitter.com",
+    "facebook":"facebook.com"
+    
 }
 ###
 POST {{URL}}/user/signin
