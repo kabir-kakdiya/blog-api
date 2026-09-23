@@ -15,11 +15,11 @@
   "devEngines": {
     "packageManager": {
       "name": "pnpm",
-      "version": "12.4.1",
+      "version": "12.5.1",
       "onFail": "ignore"
     }
   },
-  "packageManager": "pnpm@12.4.1",
+  "packageManager": "pnpm@12.5.1",
   "type": "module",
   "dependencies": {
     "argon2": "^0.45.1",
@@ -35,7 +35,7 @@
     "@types/jsonwebtoken": "^9.0.10",
     "@types/node": "^26.6.2",
     "kysely-ctl": "^0.21.0",
-    "kysely-generate": "^0.22.0",
+    "kysely-generate": "^0.22.3",
     "tsx": "^4.23.15",
     "typescript": "^7.0.2"
   }
