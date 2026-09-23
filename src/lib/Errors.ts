@@ -11,3 +11,9 @@ export class NotFoundError extends AppError {
         super(message, 404)
     }
 }
+
+export class UnauthorizedError extends AppError {
+    constructor(message = 'Token not found') {
+        super(message, 401)
+    }
+}

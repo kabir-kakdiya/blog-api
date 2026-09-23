@@ -12,7 +12,6 @@ const errorHandler: ErrorRequestHandler = (err, req, res, next) => {
     if (!isOperational) {
         console.error(`[${req.method}] ${req.originalUrl} ->`, err);
     }
-
     const message = isOperational || isDev
         ? err.message || "Something went wrong"
         : "Internal server error";

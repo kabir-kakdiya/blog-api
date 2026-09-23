@@ -25,5 +25,16 @@ Content-Type: application/json
 
 {
     "email": "namra@gmail.com",
-    "password":"Admn@123"
+    "password":"Admin@1234"
+}
+
+###
+POST {{URL}}/article/
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIxIiwiaWF0IjoxNzkwMTUxNTYwLCJleHAiOjE3OTAxNTE2MjB9.B_oTZv7HU75kMZC4bZTh7VlknpIBcqX1CCV8UQ6voeo
+Content-Type: application/json
+
+{
+    "title":"A short story",
+    "text":"This is a story of two woodcutters, who lived in a village and earned their livelihood by chopping off the trees and selling them everyday.",
+    "description": "WoodCutter's Story"
 }

@@ -3,7 +3,7 @@ import db from "../../db/db.ts";
 import { AppError } from "../../lib/Errors.ts";
 import { sendSuccess } from "../../lib/response.helpers.ts";
 import { generateToken } from "../../lib/token.helpers.ts";
-import type { ArticleInput, LoginInput, SignupInput } from "../../schemas/user.schema.ts";
+import type { LoginInput, SignupInput } from "../../schemas/user.schema.ts";
 import type { BodyHandler } from '../../types/express.ts';
 
 export const signup: BodyHandler<SignupInput> = async (req, res) => {
@@ -31,11 +31,6 @@ export const login: BodyHandler<LoginInput> = async (req, res) => {
     .executeTakeFirst()
   if (!user || !await argon2.verify(user.hash, password)) throw new AppError("Invalid credentials", 401)
   const token = generateToken(user.id)
-
-  return sendSuccess(res, { ...user, token }, "Logged in successfully", 200)
-}
-
-export const createArticle: BodyHandler<ArticleInput> = async (req, res) => {
-  const { title, description, text} = req.body;
-  
+  const { hash, ...safeUser } = user;
+  return sendSuccess(res, { ...safeUser, token }, "Logged in successfully", 200)
 }

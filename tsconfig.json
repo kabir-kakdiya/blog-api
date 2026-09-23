@@ -37,11 +37,7 @@
     "noUncheckedSideEffectImports": true,
     "moduleDetection": "force",
     "skipLibCheck": true,
-    "rewriteRelativeImportExtensions": true,
-    "typeRoots": [
-      "./node_modules/@types",
-      "./src/types"
-    ]
+    "rewriteRelativeImportExtensions": true
   },
   "include": [
     "src/"
