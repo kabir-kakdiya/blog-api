@@ -38,3 +38,11 @@ Content-Type: application/json
     "text":"This is a story of two woodcutters, who lived in a village and earned their livelihood by chopping off the trees and selling them everyday.",
     "description": "WoodCutter's Story"
 }
+
+###
+POST {{URL}}/media/presign
+Content-Type: application/json
+
+{
+    "contentType": "image/jpeg"
+}
