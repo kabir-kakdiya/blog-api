@@ -8,11 +8,16 @@ import type { BodyHandler } from '../../types/express.ts';
 
 export const signup: BodyHandler<SignupInput> = async (req, res) => {
   const { fullName, email, password, bio, ...socials } = req.body;
+  const userExists = await db.selectFrom("user").where("email", "=", email).executeTakeFirst();
+  if (userExists) {
+    throw new AppError("Email already exists", 400)
+  }
   const hash = await argon2.hash(password)
 
   const user = await db.insertInto("user").values({
     fullName, email, hash, bio
   }).returning(["id", "fullName", "email", "createdAt", "bio"]).executeTakeFirstOrThrow()
+
 
   let userSocial = {};
   if (Object.keys(socials).length) {

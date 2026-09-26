@@ -17,20 +17,19 @@ Content-Type: application/json
     "bio":"A backend dev",
     "twitter":"twitter.com",
     "facebook":"facebook.com"
-    
 }
 ###
 POST {{URL}}/user/signin
 Content-Type: application/json
 
 {
-    "email": "namra@gmail.com",
-    "password":"Admin@1234"
+    "email": "kabir@gmail.com",
+    "password":"Admin@123"
 }
 
 ###
 POST {{URL}}/article/
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIxIiwiaWF0IjoxNzkwMTUxNTYwLCJleHAiOjE3OTAxNTE2MjB9.B_oTZv7HU75kMZC4bZTh7VlknpIBcqX1CCV8UQ6voeo
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIxIiwiaWF0IjoxNzkwNDAyNjA4LCJleHAiOjE3OTA0MDI2Njh9.s0JWpN8koQ-tDhk4iSZMo9JSOJBzSWQZd8qx8-gPo1w
 Content-Type: application/json
 
 {
@@ -42,7 +41,10 @@ Content-Type: application/json
 ###
 POST {{URL}}/media/presign
 Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIxIiwiaWF0IjoxNzkwNDE5ODE5LCJleHAiOjE3OTA0MTk4Nzl9.VhoJLGEv5Fznp0TLbzjQaA0OE5Dklq_iqk6b_UoYYZ4
 
 {
-    "contentType": "image/jpeg"
+    "contentType": "image/jpeg",
+    "size":20000,
+    "filename":"profile-pic"
 }

@@ -11,6 +11,8 @@ export type Generated<T> = T extends ColumnType<infer S, infer I, infer U>
 
 export type Int8 = ColumnType<string, bigint | number | string, bigint | number | string>;
 
+export type MediaStatus = "active" | "deleted" | "pending";
+
 export type Timestamp = ColumnType<Date, Date | string, Date | string>;
 
 export interface Article {
@@ -48,6 +50,7 @@ export interface Media {
   id: Generated<Int8>;
   key: string;
   mimeType: string;
+  status: Generated<MediaStatus>;
   updatedAt: Generated<Timestamp>;
   userId: Int8;
 }

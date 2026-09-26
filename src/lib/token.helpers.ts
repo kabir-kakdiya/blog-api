@@ -10,7 +10,7 @@ export function generateToken(id: string) {
     return jwt.sign({
         userId: id,
     }, jwt_secret, {
-        expiresIn: '1m'
+        expiresIn: '1h'
     })
 }
 
