@@ -1,10 +1,12 @@
+import { randomUUIDv7 } from "node:crypto";
+
 import { PutObjectCommand } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
-import { randomUUIDv7 } from "node:crypto";
+
 import { BUCKET, S3 } from "../../lib/constants.ts";
+import { sendSuccess } from "../../lib/response.helpers.ts";
 import type { MediaInput } from "../../schemas/media.schema.ts";
 import type { ProtectedHandler } from "../../types/express.ts";
-import { sendSuccess } from "../../lib/response.helpers.ts";
 
 export const generatePresignedUrl: ProtectedHandler<MediaInput> = async (req, res) => {
     const { contentType } = req.body;

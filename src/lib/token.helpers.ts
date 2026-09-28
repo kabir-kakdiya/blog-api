@@ -1,4 +1,5 @@
 import jwt, { type JwtPayload } from "jsonwebtoken";
+
 import env from "../env.ts";
 
 const jwt_secret = env.JWT_SECRET;

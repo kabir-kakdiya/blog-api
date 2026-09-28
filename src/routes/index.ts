@@ -1,7 +1,8 @@
 import { Router, type Router as ExpressRouter } from "express";
-import userRouter from "../modules/users/user.routes.ts";
+
 import articleRouter from "../modules/articles/article.routes.ts";
 import mediaRouter from "../modules/media/media.routes.ts";
+import userRouter from "../modules/users/user.routes.ts";
 
 const apiV1Router: ExpressRouter = Router();
 

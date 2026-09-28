@@ -1,9 +1,10 @@
 import express, { type Express } from "express";
+
+import db from "./db/db.ts";
+import env from "./env.ts";
 import errorHandler from "./middlewares/errorHandler.ts";
 import notFoundHandler from "./middlewares/notFoundHandler.ts";
 import apiV1Router from "./routes/index.ts";
-import db from "./db/db.ts";
-import env from "./env.ts";
 
 const app: Express = express();
 

@@ -1,4 +1,5 @@
 import argon2 from "argon2";
+
 import db from "../../db/db.ts";
 import { AppError } from "../../lib/Errors.ts";
 import { sendSuccess } from "../../lib/response.helpers.ts";

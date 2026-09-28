@@ -1,4 +1,5 @@
 import type { RequestHandler } from "express";
+
 import { UnauthorizedError } from "../lib/Errors.ts";
 import { validateToken } from "../lib/token.helpers.ts";
 

@@ -1,5 +1,6 @@
 import type { RequestHandler } from "express";
 import * as v from "valibot";
+
 import { sendValidationError } from "../lib/response.helpers.ts";
 
 interface ValidationConfig {

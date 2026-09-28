@@ -1,7 +1,8 @@
 import type { ErrorRequestHandler } from "express";
-import { sendError } from "../lib/response.helpers.ts";
-import { AppError } from "../lib/Errors.ts";
+
 import env from "../env.ts";
+import { AppError } from "../lib/Errors.ts";
+import { sendError } from "../lib/response.helpers.ts";
 
 const errorHandler: ErrorRequestHandler = (err, req, res, next) => {
     if (res.headersSent) return next(err);
