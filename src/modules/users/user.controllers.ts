@@ -9,6 +9,10 @@ import type { BodyHandler } from "../../types/express.ts";
 
 export const signup: BodyHandler<SignupInput> = async (req, res) => {
     const { fullName, email, password, bio, ...socials } = req.body;
+    const userExists = await db.selectFrom("user").select('id').where('email', '=', email).execute()
+    if(userExists){
+        throw new AppError("Email already exists. Please log in", 400)
+    }
     const hash = await argon2.hash(password);
 
     const user = await db
