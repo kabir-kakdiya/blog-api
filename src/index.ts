@@ -3,52 +3,53 @@ import errorHandler from "./middlewares/errorHandler.ts";
 import notFoundHandler from "./middlewares/notFoundHandler.ts";
 import apiV1Router from "./routes/index.ts";
 import db from "./db/db.ts";
+import env from "./env.ts";
 
-const app: Express = express()
+const app: Express = express();
 
-let shuttingDown = false
+let shuttingDown = false;
 
-app.get('/health', (_, res) => {
+app.get("/health", (_, res) => {
     if (shuttingDown) return res.status(503).send("shutting down");
-    res.status(200).send("ok")
+    res.status(200).send("ok");
 });
 
-app.use(express.json())
+app.use(express.json());
 
-app.use('/api/v1', apiV1Router);
+app.use("/api/v1", apiV1Router);
 
 app.use(notFoundHandler);
 app.use(errorHandler);
 
-const port = Number(process.env.PORT || 5000)
+const port = env.PORT;
 
 const server = app.listen(port, () => {
-    console.log(`Server is listening on port ${port}`)
-})
+    console.log(`Server is listening on port ${port}`);
+});
 
-function gracefulShutdown(signal: Uppercase<'sigterm' | 'sigint'>) {
+function gracefulShutdown(signal: Uppercase<"sigterm" | "sigint">) {
     shuttingDown = true;
-    console.log(`Received ${signal}. Starting graceful shutdown...`)
+    console.log(`Received ${signal}. Starting graceful shutdown...`);
 
     // give the LB time to notice the 503 and stop routing
     setTimeout(() => {
         server.close(async () => {
-            await db.destroy()
-            process.exit(0)
-        })
-    }, 3000)
+            await db.destroy();
+            process.exit(0);
+        });
+    }, 3000);
 
     // Optional: Force shutdown if it takes too long
     setTimeout(async () => {
-        console.error('Could not close connections in time, forcefully shutting down');
+        console.error("Could not close connections in time, forcefully shutting down");
         await db.destroy();
         process.exit(1);
     }, 10000); // 10 seconds timeout
-};
+}
 
 // Listen for system signals
-process.on('SIGTERM', () => gracefulShutdown('SIGTERM'));
-process.on('SIGINT', () => gracefulShutdown('SIGINT'));
+process.on("SIGTERM", () => gracefulShutdown("SIGTERM"));
+process.on("SIGINT", () => gracefulShutdown("SIGINT"));
 
 process.on("unhandledRejection", (reason) => {
     console.error("Unhandled rejection:", reason);
@@ -56,5 +57,5 @@ process.on("unhandledRejection", (reason) => {
 
 process.on("uncaughtException", (err) => {
     console.error("Uncaught exception:", err);
-    gracefulShutdown('SIGTERM') // state may be corrupt, so let your process manager restart
+    gracefulShutdown("SIGTERM"); // state may be corrupt, so let your process manager restart
 });

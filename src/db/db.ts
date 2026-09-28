@@ -1,13 +1,14 @@
-import { CamelCasePlugin, Kysely } from 'kysely'
-import { PostgresJSDialect } from 'kysely-postgres-js'
-import postgres from 'postgres'
-import { type DB } from './types.ts'
+import { CamelCasePlugin, Kysely } from "kysely";
+import { PostgresJSDialect } from "kysely-postgres-js";
+import postgres from "postgres";
+import { type DB } from "./types.ts";
+import env from "../env.ts";
 
 const db = new Kysely<DB>({
     dialect: new PostgresJSDialect({
-        postgres: postgres(process.env.DATABASE_URL!),
+        postgres: postgres(env.DATABASE_URL),
     }),
-    plugins: [new CamelCasePlugin()]
-})
+    plugins: [new CamelCasePlugin()],
+});
 
-export default db
+export default db;

@@ -10,7 +10,11 @@ export const generatePresignedUrl: ProtectedHandler<MediaInput> = async (req, re
     const { contentType } = req.body;
     const key = `uploads/${randomUUIDv7()}`;
 
-    const url = await getSignedUrl(S3, new PutObjectCommand({ Bucket: BUCKET, Key: key, ContentType: contentType }), { expiresIn: 300 })
+    const url = await getSignedUrl(
+        S3,
+        new PutObjectCommand({ Bucket: BUCKET, Key: key, ContentType: contentType }),
+        { expiresIn: 300 },
+    );
 
-    return sendSuccess(res, { url, key }, 'Presigned URL created', 201)
-}
+    return sendSuccess(res, { url, key }, "Presigned URL created", 201);
+};

@@ -4,8 +4,8 @@ import { articleSchema } from "../../schemas/user.schema.ts";
 import { createArticle } from "./article.controller.ts";
 import authenticateUser from "../../middlewares/authenticate.ts";
 
-const articleRouter: ExpressRouter = Router()
+const articleRouter: ExpressRouter = Router();
 
-articleRouter.post('/', authenticateUser, validate({ body: articleSchema }), createArticle)
+articleRouter.post("/", authenticateUser, validate({ body: articleSchema }), createArticle);
 
-export default articleRouter
+export default articleRouter;
