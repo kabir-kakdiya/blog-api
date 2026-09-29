@@ -9,38 +9,37 @@ import type { BodyHandler } from "../../types/express.ts";
 
 export const signup: BodyHandler<SignupInput> = async (req, res) => {
     const { fullName, email, password, bio, ...socials } = req.body;
-    const userExists = await db
-        .selectFrom("user")
-        .select("id")
-        .where("email", "=", email)
-        .execute();
-    if (userExists) {
-        throw new AppError("Email already exists. Please log in", 400);
+    try {
+        const { user, userSocials } = await db.transaction().execute(async (trx) => {
+            const hash = await argon2.hash(password);
+            const user = await trx
+                .insertInto("user")
+                .values({
+                    fullName,
+                    email,
+                    hash,
+                    bio,
+                })
+                .returning(["id", "fullName", "email", "bio", "createdAt"])
+                .executeTakeFirstOrThrow();
+            let userSocials = null;
+            if (Object.keys(socials).length) {
+                userSocials = await db
+                    .insertInto("social")
+                    .values({ userId: user.id, ...socials })
+                    .returning(["twitter", "facebook", "linkedin"])
+                    .executeTakeFirstOrThrow();
+            }
+            return { user, userSocials };
+        });
+        const token = generateToken(user.id);
+        return sendSuccess(res, { ...user, token, socials: userSocials }, "Account created", 201);
+    } catch (error) {
+        if (error instanceof Error && "code" in error && error.code === "23505") {
+            throw new AppError("Email already exists. Please log in", 400);
+        }
+        throw error;
     }
-    const hash = await argon2.hash(password);
-
-    const user = await db
-        .insertInto("user")
-        .values({
-            fullName,
-            email,
-            hash,
-            bio,
-        })
-        .returning(["id", "fullName", "email", "createdAt", "bio"])
-        .executeTakeFirstOrThrow();
-
-    let userSocial = {};
-    if (Object.keys(socials).length) {
-        userSocial = await db
-            .insertInto("social")
-            .values({ userId: user.id, ...socials })
-            .returning(["twitter", "facebook", "linkedin"])
-            .executeTakeFirstOrThrow();
-    }
-
-    const token = generateToken(user.id);
-    return sendSuccess(res, { ...user, token, ...userSocial }, "Account created", 201);
 };
 
 export const login: BodyHandler<LoginInput> = async (req, res) => {
