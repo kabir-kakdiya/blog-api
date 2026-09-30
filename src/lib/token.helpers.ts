@@ -15,7 +15,7 @@ export function generateToken(id: string) {
         },
         jwt_secret,
         {
-            expiresIn: "1m",
+            expiresIn: "2h",
         },
     );
 }

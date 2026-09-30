@@ -7,7 +7,7 @@ export const userSchema = v.object({
     fullName: v.pipe(
         v.string("Full name is required"),
         v.trim(),
-        v.minLength(MIN_STRING_LENGTH, minLengthMessage("full name")),
+        v.nonEmpty("Full name is required"),
     ),
     email: v.pipe(v.string("Email is required"), v.email("Please provide a valid email")),
     password: v.pipe(

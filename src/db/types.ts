@@ -5,6 +5,8 @@
 
 import type { ColumnType } from "kysely";
 
+export type FileStatus = "active" | "deleted" | "pending";
+
 export type Generated<T> =
     T extends ColumnType<infer S, infer I, infer U>
         ? ColumnType<S, I | undefined, U>
@@ -49,6 +51,7 @@ export interface Media {
     id: Generated<Int8>;
     key: string;
     mimeType: string;
+    status: Generated<FileStatus>;
     updatedAt: Generated<Timestamp>;
     userId: Int8;
 }

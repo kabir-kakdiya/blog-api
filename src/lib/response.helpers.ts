@@ -18,7 +18,7 @@ export function sendSuccess<T>(
     statusCode = 200,
 ) {
     const body: ApiResponse<T> = { success: true, message };
-    if (data !== undefined) {
+    if (data) {
         body.data = data;
     }
     return res.status(statusCode).json(body);

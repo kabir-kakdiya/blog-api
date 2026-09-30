@@ -44,5 +44,9 @@ POST {{URL}}/media/presign
 Content-Type: application/json
 
 {
-    "contentType": "image/jpeg"
+    "contentType": "image/jpeg",
+    "size":"123"
 }
+
+###
+GET {{URL}}/media/1/confirm
