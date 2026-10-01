@@ -9,7 +9,7 @@ export interface ApiResponse<T = unknown> {
 }
 
 /**
- * Sends a successful JSON response (Default status 200 OK or 201 Created)
+ * Sends a successful JSON response (Default status 200 OK)
  */
 export function sendSuccess<T>(
     res: Response,

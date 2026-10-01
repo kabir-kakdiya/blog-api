@@ -49,4 +49,5 @@ Content-Type: application/json
 }
 
 ###
-GET {{URL}}/media/1/confirm
+GET {{URL}}/media/2/confirm
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIxIiwiaWF0IjoxNzkwODMyMDU3LCJleHAiOjE3OTA4MzkyNTd9.qiY_2h-fXenA2OotB7clHkFzpJYkEMI6XD_d5mUhknM

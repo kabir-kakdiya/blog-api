@@ -50,7 +50,7 @@ export async function up(db: Kysely<any>): Promise<void> {
             .addColumn("title", "varchar(200)", (col) => col.notNull())
             .addColumn("description", "varchar(400)", (col) => col.notNull())
             .addColumn("text", "text", (col) => col.notNull())
-            .addColumn("author", "bigint", (col) =>
+            .addColumn("author_id", "bigint", (col) =>
                 col.references("user.id").notNull().onDelete("cascade"),
             ),
     ).execute();
@@ -64,7 +64,7 @@ export async function up(db: Kysely<any>): Promise<void> {
                 col.references("article.id").onDelete("cascade").notNull(),
             )
             .addColumn("text", "text", (col) => col.notNull())
-            .addColumn("author", "bigint", (col) =>
+            .addColumn("author_id", "bigint", (col) =>
                 col.references("user.id").notNull().onDelete("cascade"),
             )
             .addColumn("deleted_at", "timestamptz"),
@@ -78,41 +78,71 @@ export async function up(db: Kysely<any>): Promise<void> {
             .addColumn("name", "varchar(200)", (col) => col.notNull()),
     ).execute();
     await addUpdatedAtTrigger(db, "tag");
-    await withTimestamps(
-        db.schema
-            .createTable("article_tag")
-            .addColumn("tag_id", "bigint", (col) => col.references("tag.id").onDelete("cascade"))
-            .addColumn("article_id", "bigint", (col) =>
-                col.references("article.id").onDelete("cascade"),
-            )
-            .addPrimaryKeyConstraint("article_tags_primary_key", ["article_id", "tag_id"]),
-    ).execute();
-    await addUpdatedAtTrigger(db, "article_tag");
+
+    await db.schema
+        .createTable("article_tag")
+        .addColumn("tag_id", "bigint", (col) => col.references("tag.id").onDelete("cascade"))
+        .addColumn("article_id", "bigint", (col) =>
+            col.references("article.id").onDelete("cascade"),
+        )
+        .addPrimaryKeyConstraint("article_tags_primary_key", ["article_id", "tag_id"])
+        .execute();
+
+    await db.schema.createType("file_status").asEnum(["pending", "active", "deleted"]).execute();
 
     await withTimestamps(
         db.schema
             .createTable("media")
             .addColumn("id", "bigint", (col) => col.generatedAlwaysAsIdentity().primaryKey())
-            .addColumn("key", "varchar(200)", (col) => col.notNull())
+            .addColumn("key", "varchar(200)", (col) => col.notNull().unique())
             .addColumn("user_id", "bigint", (col) =>
                 col.references("user.id").onDelete("cascade").notNull(),
             )
             .addColumn("mime_type", "varchar(50)", (col) => col.notNull())
-            .addColumn("file_size", "int4", (col) => col.notNull())
-            .addColumn("article_id", "bigint", (col) =>
-                col.references("article.id").onDelete("cascade"),
-            )
-            .addColumn("comment_id", "bigint", (col) =>
-                col.references("comment.id").onDelete("cascade"),
-            )
-            .addCheckConstraint(
-                "media_single_usage",
-                sql`
-			num_nonnulls(article_id, comment_id) <= 1
-			`,
-            ), // num_nonnulls is a postgres built-in function
+            .addColumn("file_size", "bigint", (col) => col.notNull().check(sql`file_size > 0`))
+            .addColumn("status", sql`file_status`, (col) => col.notNull().defaultTo("pending")),
     ).execute();
     await addUpdatedAtTrigger(db, "media");
+
+    await db.schema
+        .createTable("article_media")
+        .addColumn("article_id", "bigint", (col) =>
+            col.notNull().references("article.id").onDelete("cascade"),
+        )
+        .addColumn("media_id", "bigint", (col) =>
+            col.notNull().references("media.id").onDelete("cascade"),
+        )
+        .addColumn("position", "integer", (col) =>
+            col
+                .notNull()
+                .defaultTo(0)
+                .check(sql`position >= 0`),
+        )
+        .addPrimaryKeyConstraint("article_media_primary_key", ["article_id", "media_id"])
+        .addColumn("created_at", "timestamptz", (col) =>
+            col.notNull().defaultTo(sql`CURRENT_TIMESTAMP`),
+        )
+        .execute();
+
+    await db.schema
+        .createTable("comment_media")
+        .addColumn("comment_id", "bigint", (col) =>
+            col.notNull().references("comment.id").onDelete("cascade"),
+        )
+        .addColumn("media_id", "bigint", (col) =>
+            col.notNull().references("media.id").onDelete("cascade"),
+        )
+        .addColumn("position", "integer", (col) =>
+            col
+                .notNull()
+                .defaultTo(0)
+                .check(sql`position >= 0`),
+        )
+        .addColumn("created_at", "timestamptz", (col) =>
+            col.notNull().defaultTo(sql`CURRENT_TIMESTAMP`),
+        )
+        .addPrimaryKeyConstraint("comment_media_primary_key", ["comment_id", "media_id"])
+        .execute();
 }
 
 // `any` is required here since migrations should be frozen in time. alternatively, keep a "snapshot" db interface.
@@ -121,7 +151,7 @@ export async function down(db: Kysely<any>): Promise<void> {
     await db.schema.dropTable("user").execute();
 }
 
-function withTimestamps(qb: CreateTableBuilder<any, any>) {
+export function withTimestamps(qb: CreateTableBuilder<any, any>) {
     return qb
         .addColumn("created_at", "timestamptz", (col) =>
             col.defaultTo(sql`CURRENT_TIMESTAMP`).notNull(),
@@ -131,7 +161,7 @@ function withTimestamps(qb: CreateTableBuilder<any, any>) {
         );
 }
 
-async function addUpdatedAtTrigger(db: Kysely<any>, tableName: string) {
+export async function addUpdatedAtTrigger(db: Kysely<any>, tableName: string) {
     await sql`
 		CREATE TRIGGER ${sql.raw(`${tableName}_updated_at`)}
 		BEFORE UPDATE ON ${sql.table(tableName)}

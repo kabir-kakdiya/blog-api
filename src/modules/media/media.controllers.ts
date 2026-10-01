@@ -5,7 +5,7 @@ import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 
 import db from "../../db/db.ts";
 import { BUCKET as Bucket, S3 } from "../../lib/constants.ts";
-import { NotFoundError } from "../../lib/Errors.ts";
+import { AppError, NotFoundError } from "../../lib/Errors.ts";
 import { sendSuccess } from "../../lib/response.helpers.ts";
 import type { MediaInput, MediaParamInput } from "../../schemas/media.schema.ts";
 import type { ProtectedHandler } from "../../types/express.ts";
@@ -54,9 +54,6 @@ export const confirmFileUpload: ProtectedHandler<unknown, unknown, MediaParamInp
         .where("userId", "=", userId)
         .select(["key"])
         .executeTakeFirstOrThrow(() => new NotFoundError("Media not found"));
-    if (!media) {
-        throw new NotFoundError("Media not found");
-    }
 
     await S3.send(
         new HeadObjectCommand({
@@ -68,6 +65,13 @@ export const confirmFileUpload: ProtectedHandler<unknown, unknown, MediaParamInp
         .updateTable("media")
         .set({ status: "active" })
         .where("id", "=", mediaId)
-        .executeTakeFirstOrThrow();
+        .executeTakeFirstOrThrow(
+            () =>
+                new AppError(
+                    "Failed to confirm media upload. Please try after some time.",
+                    500,
+                    false,
+                ),
+        );
     return sendSuccess(res, null, "Media upload successful");
 };

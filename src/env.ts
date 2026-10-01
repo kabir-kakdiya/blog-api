@@ -20,8 +20,14 @@ const envSchema = v.object({
         "development",
     ),
     S3_BUCKET: v.pipe(v.string(), v.trim(), v.nonEmpty("Bucket name is required")),
+    AWS_REGION: v.pipe(
+        v.string(),
+        v.trim(),
+        v.nonEmpty("Region name is required"),
+        v.regex(/^[a-z]{2}(?:-[a-z]+)+-\d+$/, "Invalid AWS region"),
+    ),
 });
 
-const env = v.parse(envSchema, process.env);
+const env = v.parse(envSchema, process.env, { abortEarly: true });
 
 export default env;
