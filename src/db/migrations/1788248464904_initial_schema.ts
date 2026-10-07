@@ -26,9 +26,7 @@ export async function up(db: Kysely<any>): Promise<void> {
     await withTimestamps(
         db.schema
             .createTable("social")
-            .addColumn("user_id", "bigint", (col) =>
-                col.references("user.id").onDelete("cascade").primaryKey(),
-            )
+            .addColumn("user_id", "bigint", (col) => col.references("user.id").onDelete("cascade").primaryKey())
             .addColumn("twitter", "varchar(200)", (col) => col.unique())
             .addColumn("facebook", "varchar(200)", (col) => col.unique())
             .addColumn("linkedin", "varchar(200)", (col) => col.unique())
@@ -50,9 +48,7 @@ export async function up(db: Kysely<any>): Promise<void> {
             .addColumn("title", "varchar(200)", (col) => col.notNull())
             .addColumn("description", "varchar(400)", (col) => col.notNull())
             .addColumn("text", "text", (col) => col.notNull())
-            .addColumn("author_id", "bigint", (col) =>
-                col.references("user.id").notNull().onDelete("cascade"),
-            ),
+            .addColumn("author_id", "bigint", (col) => col.references("user.id").notNull().onDelete("cascade")),
     ).execute();
     await addUpdatedAtTrigger(db, "article");
 
@@ -60,13 +56,9 @@ export async function up(db: Kysely<any>): Promise<void> {
         db.schema
             .createTable("comment")
             .addColumn("id", "bigint", (col) => col.generatedAlwaysAsIdentity().primaryKey())
-            .addColumn("article_id", "bigint", (col) =>
-                col.references("article.id").onDelete("cascade").notNull(),
-            )
+            .addColumn("article_id", "bigint", (col) => col.references("article.id").onDelete("cascade").notNull())
             .addColumn("text", "text", (col) => col.notNull())
-            .addColumn("author_id", "bigint", (col) =>
-                col.references("user.id").notNull().onDelete("cascade"),
-            )
+            .addColumn("author_id", "bigint", (col) => col.references("user.id").notNull().onDelete("cascade"))
             .addColumn("deleted_at", "timestamptz"),
     ).execute();
     await addUpdatedAtTrigger(db, "comment");
@@ -82,9 +74,7 @@ export async function up(db: Kysely<any>): Promise<void> {
     await db.schema
         .createTable("article_tag")
         .addColumn("tag_id", "bigint", (col) => col.references("tag.id").onDelete("cascade"))
-        .addColumn("article_id", "bigint", (col) =>
-            col.references("article.id").onDelete("cascade"),
-        )
+        .addColumn("article_id", "bigint", (col) => col.references("article.id").onDelete("cascade"))
         .addPrimaryKeyConstraint("article_tags_primary_key", ["article_id", "tag_id"])
         .execute();
 
@@ -95,9 +85,7 @@ export async function up(db: Kysely<any>): Promise<void> {
             .createTable("media")
             .addColumn("id", "bigint", (col) => col.generatedAlwaysAsIdentity().primaryKey())
             .addColumn("key", "varchar(200)", (col) => col.notNull().unique())
-            .addColumn("user_id", "bigint", (col) =>
-                col.references("user.id").onDelete("cascade").notNull(),
-            )
+            .addColumn("user_id", "bigint", (col) => col.references("user.id").onDelete("cascade").notNull())
             .addColumn("mime_type", "varchar(50)", (col) => col.notNull())
             .addColumn("file_size", "bigint", (col) => col.notNull().check(sql`file_size > 0`))
             .addColumn("status", sql`file_status`, (col) => col.notNull().defaultTo("pending")),
@@ -106,12 +94,8 @@ export async function up(db: Kysely<any>): Promise<void> {
 
     await db.schema
         .createTable("article_media")
-        .addColumn("article_id", "bigint", (col) =>
-            col.notNull().references("article.id").onDelete("cascade"),
-        )
-        .addColumn("media_id", "bigint", (col) =>
-            col.notNull().references("media.id").onDelete("cascade"),
-        )
+        .addColumn("article_id", "bigint", (col) => col.notNull().references("article.id").onDelete("cascade"))
+        .addColumn("media_id", "bigint", (col) => col.notNull().references("media.id").onDelete("cascade"))
         .addColumn("position", "integer", (col) =>
             col
                 .notNull()
@@ -119,28 +103,20 @@ export async function up(db: Kysely<any>): Promise<void> {
                 .check(sql`position >= 0`),
         )
         .addPrimaryKeyConstraint("article_media_primary_key", ["article_id", "media_id"])
-        .addColumn("created_at", "timestamptz", (col) =>
-            col.notNull().defaultTo(sql`CURRENT_TIMESTAMP`),
-        )
+        .addColumn("created_at", "timestamptz", (col) => col.notNull().defaultTo(sql`CURRENT_TIMESTAMP`))
         .execute();
 
     await db.schema
         .createTable("comment_media")
-        .addColumn("comment_id", "bigint", (col) =>
-            col.notNull().references("comment.id").onDelete("cascade"),
-        )
-        .addColumn("media_id", "bigint", (col) =>
-            col.notNull().references("media.id").onDelete("cascade"),
-        )
+        .addColumn("comment_id", "bigint", (col) => col.notNull().references("comment.id").onDelete("cascade"))
+        .addColumn("media_id", "bigint", (col) => col.notNull().references("media.id").onDelete("cascade"))
         .addColumn("position", "integer", (col) =>
             col
                 .notNull()
                 .defaultTo(0)
                 .check(sql`position >= 0`),
         )
-        .addColumn("created_at", "timestamptz", (col) =>
-            col.notNull().defaultTo(sql`CURRENT_TIMESTAMP`),
-        )
+        .addColumn("created_at", "timestamptz", (col) => col.notNull().defaultTo(sql`CURRENT_TIMESTAMP`))
         .addPrimaryKeyConstraint("comment_media_primary_key", ["comment_id", "media_id"])
         .execute();
 }
@@ -153,12 +129,8 @@ export async function down(db: Kysely<any>): Promise<void> {
 
 export function withTimestamps(qb: CreateTableBuilder<any, any>) {
     return qb
-        .addColumn("created_at", "timestamptz", (col) =>
-            col.defaultTo(sql`CURRENT_TIMESTAMP`).notNull(),
-        )
-        .addColumn("updated_at", "timestamptz", (col) =>
-            col.defaultTo(sql`CURRENT_TIMESTAMP`).notNull(),
-        );
+        .addColumn("created_at", "timestamptz", (col) => col.defaultTo(sql`CURRENT_TIMESTAMP`).notNull())
+        .addColumn("updated_at", "timestamptz", (col) => col.defaultTo(sql`CURRENT_TIMESTAMP`).notNull());
 }
 
 export async function addUpdatedAtTrigger(db: Kysely<any>, tableName: string) {

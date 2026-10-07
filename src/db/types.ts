@@ -7,99 +7,97 @@ import type { ColumnType } from "kysely";
 
 export type FileStatus = "active" | "deleted" | "pending";
 
-export type Generated<T> = T extends ColumnType<infer S, infer I, infer U>
-  ? ColumnType<S, I | undefined, U>
-  : ColumnType<T, T | undefined, T>;
+export type Generated<T> = T extends ColumnType<infer S, infer I, infer U> ? ColumnType<S, I | undefined, U> : ColumnType<T, T | undefined, T>;
 
 export type Int8 = ColumnType<string, bigint | number | string, bigint | number | string>;
 
 export type Timestamp = ColumnType<Date, Date | string, Date | string>;
 
 export interface Article {
-  authorId: Int8;
-  createdAt: Generated<Timestamp>;
-  description: string;
-  id: Generated<Int8>;
-  text: string;
-  title: string;
-  updatedAt: Generated<Timestamp>;
+    authorId: Int8;
+    createdAt: Generated<Timestamp>;
+    description: string;
+    id: Generated<Int8>;
+    text: string;
+    title: string;
+    updatedAt: Generated<Timestamp>;
 }
 
 export interface ArticleMedia {
-  articleId: Int8;
-  createdAt: Generated<Timestamp>;
-  mediaId: Int8;
-  position: Generated<number>;
+    articleId: Int8;
+    createdAt: Generated<Timestamp>;
+    mediaId: Int8;
+    position: Generated<number>;
 }
 
 export interface ArticleTag {
-  articleId: Int8;
-  tagId: Int8;
+    articleId: Int8;
+    tagId: Int8;
 }
 
 export interface Comment {
-  articleId: Int8;
-  authorId: Int8;
-  createdAt: Generated<Timestamp>;
-  deletedAt: Timestamp | null;
-  id: Generated<Int8>;
-  text: string;
-  updatedAt: Generated<Timestamp>;
+    articleId: Int8;
+    authorId: Int8;
+    createdAt: Generated<Timestamp>;
+    deletedAt: Timestamp | null;
+    id: Generated<Int8>;
+    text: string;
+    updatedAt: Generated<Timestamp>;
 }
 
 export interface CommentMedia {
-  commentId: Int8;
-  createdAt: Generated<Timestamp>;
-  mediaId: Int8;
-  position: Generated<number>;
+    commentId: Int8;
+    createdAt: Generated<Timestamp>;
+    mediaId: Int8;
+    position: Generated<number>;
 }
 
 export interface Media {
-  createdAt: Generated<Timestamp>;
-  fileSize: Int8;
-  id: Generated<Int8>;
-  key: string;
-  mimeType: string;
-  status: Generated<FileStatus>;
-  updatedAt: Generated<Timestamp>;
-  userId: Int8;
+    createdAt: Generated<Timestamp>;
+    fileSize: Int8;
+    id: Generated<Int8>;
+    key: string;
+    mimeType: string;
+    status: Generated<FileStatus>;
+    updatedAt: Generated<Timestamp>;
+    userId: Int8;
 }
 
 export interface Social {
-  createdAt: Generated<Timestamp>;
-  facebook: string | null;
-  linkedin: string | null;
-  twitter: string | null;
-  updatedAt: Generated<Timestamp>;
-  userId: Int8;
+    createdAt: Generated<Timestamp>;
+    facebook: string | null;
+    linkedin: string | null;
+    twitter: string | null;
+    updatedAt: Generated<Timestamp>;
+    userId: Int8;
 }
 
 export interface Tag {
-  createdAt: Generated<Timestamp>;
-  id: Generated<Int8>;
-  name: string;
-  updatedAt: Generated<Timestamp>;
+    createdAt: Generated<Timestamp>;
+    id: Generated<Int8>;
+    name: string;
+    updatedAt: Generated<Timestamp>;
 }
 
 export interface User {
-  bio: string | null;
-  createdAt: Generated<Timestamp>;
-  email: string;
-  fullName: string;
-  hash: string;
-  id: Generated<Int8>;
-  profileImageId: Int8 | null;
-  updatedAt: Generated<Timestamp>;
+    bio: string | null;
+    createdAt: Generated<Timestamp>;
+    email: string;
+    fullName: string;
+    hash: string;
+    id: Generated<Int8>;
+    profileImageId: Int8 | null;
+    updatedAt: Generated<Timestamp>;
 }
 
 export interface DB {
-  article: Article;
-  articleMedia: ArticleMedia;
-  articleTag: ArticleTag;
-  comment: Comment;
-  commentMedia: CommentMedia;
-  media: Media;
-  social: Social;
-  tag: Tag;
-  user: User;
+    article: Article;
+    articleMedia: ArticleMedia;
+    articleTag: ArticleTag;
+    comment: Comment;
+    commentMedia: CommentMedia;
+    media: Media;
+    social: Social;
+    tag: Tag;
+    user: User;
 }

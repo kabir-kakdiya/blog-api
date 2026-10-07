@@ -4,9 +4,7 @@ import type { Kysely } from "kysely";
 export async function up(db: Kysely<any>): Promise<void> {
     await db.schema
         .alterTable("user")
-        .addColumn("profile_image_id", "bigint", (col) =>
-            col.references("media.id").onDelete("set null"),
-        )
+        .addColumn("profile_image_id", "bigint", (col) => col.references("media.id").onDelete("set null"))
         .execute();
 }
 

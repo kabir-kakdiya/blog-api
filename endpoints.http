@@ -24,13 +24,13 @@ POST {{URL}}/auth/signin
 Content-Type: application/json
 
 {
-    "email": "namra@gmail.com",
-    "password":"Admin@1234"
+    "email": "kabir@gmail.com",
+    "password":"Admin@123"
 }
 
 ###
 POST {{URL}}/article/
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIxIiwiaWF0IjoxNzkwMTUxNTYwLCJleHAiOjE3OTAxNTE2MjB9.B_oTZv7HU75kMZC4bZTh7VlknpIBcqX1CCV8UQ6voeo
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIyIiwiaWF0IjoxNzkxMjg0ODAwLCJleHAiOjE3OTEyOTIwMDB9.s0xcmVPmTsbA01Qz4hZS4AKiAXsWqpWmMJ-TiOvE1yc
 Content-Type: application/json
 
 {
@@ -40,12 +40,24 @@ Content-Type: application/json
 }
 
 ###
-POST {{URL}}/media/presign
+POST {{URL}}/media/presigned-url/profile
 Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIyIiwiaWF0IjoxNzkxMjg0ODAwLCJleHAiOjE3OTEyOTIwMDB9.s0xcmVPmTsbA01Qz4hZS4AKiAXsWqpWmMJ-TiOvE1yc
 
 {
     "contentType": "image/jpeg",
-    "size":"123"
+    "size":123
+}
+###
+POST {{URL}}/media/presigned-url/article
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIyIiwiaWF0IjoxNzkxMjg0ODAwLCJleHAiOjE3OTEyOTIwMDB9.s0xcmVPmTsbA01Qz4hZS4AKiAXsWqpWmMJ-TiOvE1yc
+
+{
+    "contentType": "image/jpeg",
+    "size":123,
+    "articleId": "1",
+    "position":0
 }
 
 ###

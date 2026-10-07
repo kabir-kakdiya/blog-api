@@ -5,7 +5,7 @@ import type { ProtectedHandler } from "../../types/express.ts";
 
 export const createArticle: ProtectedHandler<ArticleInput> = async (req, res) => {
     const { title, description, text } = req.body;
-    const { userId: author } = res.locals;
+    const { userId } = res.locals;
 
     const article = await db
         .insertInto("article")
@@ -13,7 +13,7 @@ export const createArticle: ProtectedHandler<ArticleInput> = async (req, res) =>
             title,
             description,
             text,
-            author,
+            authorId: userId,
         })
         .returning(["id", "title", "description", "text", "createdAt"])
         .executeTakeFirstOrThrow();

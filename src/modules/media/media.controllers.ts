@@ -1,77 +1,30 @@
-import { randomUUIDv7 } from "node:crypto";
-
-import { HeadObjectCommand, PutObjectCommand } from "@aws-sdk/client-s3";
-import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
-
-import db from "../../db/db.ts";
-import { BUCKET as Bucket, S3 } from "../../lib/constants.ts";
-import { AppError, NotFoundError } from "../../lib/Errors.ts";
 import { sendSuccess } from "../../lib/response.helpers.ts";
-import type { MediaInput, MediaParamInput } from "../../schemas/media.schema.ts";
+import type { ArticleMediaInput, CommentMediaInput, MediaConfirmInput, MediaInput } from "../../schemas/media.schema.ts";
 import type { ProtectedHandler } from "../../types/express.ts";
+import { confirmFileUpload, generatePresignedUrl } from "./media.services.ts";
 
-export const generatePresignedUrl: ProtectedHandler<MediaInput> = async (req, res) => {
-    const { contentType, size } = req.body;
+export const generateProfileImageUrl: ProtectedHandler<MediaInput> = async (req, res) => {
     const { userId } = res.locals;
-
-    const key = `${userId}/${randomUUIDv7()}`;
-
-    const [url, { id: mediaId }] = await Promise.all([
-        getSignedUrl(
-            S3,
-            new PutObjectCommand({
-                Bucket,
-                Key: key,
-                ContentType: contentType,
-                ContentLength: size,
-            }),
-            { expiresIn: 300 },
-        ),
-        db
-            .insertInto("media")
-            .values({
-                key,
-                mimeType: contentType,
-                userId,
-                fileSize: size,
-            })
-            .returning("id")
-            .executeTakeFirstOrThrow(),
-    ]);
-
-    return sendSuccess(res, { url, mediaId }, "Presigned URL created", 201);
+    const data = await generatePresignedUrl(req.body, userId);
+    return sendSuccess(res, data, "Presigned URL created for profile", 201);
 };
 
-export const confirmFileUpload: ProtectedHandler<unknown, unknown, MediaParamInput> = async (
-    req,
-    res,
-) => {
+export const generateArticleMediaUrl: ProtectedHandler<ArticleMediaInput> = async (req, res) => {
+    const { userId } = res.locals;
+    const data = await generatePresignedUrl(req.body, userId);
+    return sendSuccess(res, data, "Presigned URL created for article", 201);
+};
+
+export const generateCommentMediaUrl: ProtectedHandler<CommentMediaInput> = async (req, res) => {
+    const { userId } = res.locals;
+    const data = await generatePresignedUrl(req.body, userId);
+    return sendSuccess(res, data, "Presigned URL created for comment", 201);
+};
+
+export const validateMediaUpload: ProtectedHandler<unknown, unknown, MediaConfirmInput> = async (req, res) => {
     const { userId } = res.locals;
     const { mediaId } = req.params;
-    const media = await db
-        .selectFrom("media")
-        .where("id", "=", mediaId)
-        .where("userId", "=", userId)
-        .select(["key"])
-        .executeTakeFirstOrThrow(() => new NotFoundError("Media not found"));
 
-    await S3.send(
-        new HeadObjectCommand({
-            Bucket,
-            Key: media.key,
-        }),
-    );
-    await db
-        .updateTable("media")
-        .set({ status: "active" })
-        .where("id", "=", mediaId)
-        .executeTakeFirstOrThrow(
-            () =>
-                new AppError(
-                    "Failed to confirm media upload. Please try after some time.",
-                    500,
-                    false,
-                ),
-        );
+    await confirmFileUpload(mediaId, userId);
     return sendSuccess(res, null, "Media upload successful");
 };

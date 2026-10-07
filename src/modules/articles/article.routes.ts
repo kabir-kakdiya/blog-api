@@ -7,6 +7,7 @@ import { createArticle } from "./article.controller.ts";
 
 const articleRouter: ExpressRouter = Router();
 
-articleRouter.post("/", authenticateUser, validate({ body: articleSchema }), createArticle);
+articleRouter.use(authenticateUser);
+articleRouter.post("/", validate({ body: articleSchema }), createArticle);
 
 export default articleRouter;

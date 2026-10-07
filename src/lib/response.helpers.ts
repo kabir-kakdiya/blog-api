@@ -11,12 +11,7 @@ export interface ApiResponse<T = unknown> {
 /**
  * Sends a successful JSON response (Default status 200 OK)
  */
-export function sendSuccess<T>(
-    res: Response,
-    data?: T,
-    message = "Operation successful",
-    statusCode = 200,
-) {
+export function sendSuccess<T>(res: Response, data?: T, message = "Operation successful", statusCode = 200) {
     const body: ApiResponse<T> = { success: true, message };
     if (data) {
         body.data = data;
@@ -27,12 +22,7 @@ export function sendSuccess<T>(
 /**
  * Sends a generic error response (Default status 400 Bad Request)
  */
-export function sendError(
-    res: Response,
-    message = "An error occurred",
-    statusCode = 400,
-    errors?: unknown,
-) {
+export function sendError(res: Response, message = "An error occurred", statusCode = 400, errors?: unknown) {
     return res.status(statusCode).json({
         success: false,
         message,
@@ -43,11 +33,7 @@ export function sendError(
 /**
  * Converts Valibot issues into a clean `{ [field]: "error message" }` map
  */
-export function sendValidationError(
-    res: Response,
-    issues: [BaseIssue<unknown>, ...BaseIssue<unknown>[]],
-    message = "Validation failed",
-) {
+export function sendValidationError(res: Response, issues: [BaseIssue<unknown>, ...BaseIssue<unknown>[]], message = "Validation failed") {
     const { nested } = flatten(issues);
     return sendError(res, message, 422, nested);
 }

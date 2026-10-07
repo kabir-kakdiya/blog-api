@@ -24,7 +24,7 @@ export const signup: BodyHandler<SignupInput> = async (req, res) => {
                 .executeTakeFirstOrThrow();
             let userSocials = null;
             if (Object.keys(socials).length) {
-                userSocials = await db
+                userSocials = await trx
                     .insertInto("social")
                     .values({ userId: user.id, ...socials })
                     .returning(["twitter", "facebook", "linkedin"])
@@ -45,13 +45,8 @@ export const signup: BodyHandler<SignupInput> = async (req, res) => {
 export const login: BodyHandler<LoginInput> = async (req, res) => {
     const { email, password } = req.body;
 
-    const user = await db
-        .selectFrom("user")
-        .select(["id", "fullName", "email", "bio", "hash"])
-        .where("email", "=", email)
-        .executeTakeFirst();
-    if (!user || !(await argon2.verify(user.hash, password)))
-        throw new AppError("Invalid credentials", 401);
+    const user = await db.selectFrom("user").select(["id", "fullName", "email", "bio", "hash"]).where("email", "=", email).executeTakeFirst();
+    if (!user || !(await argon2.verify(user.hash, password))) throw new AppError("Invalid credentials", 401);
     const token = generateToken(user.id);
     const { hash, ...safeUser } = user;
     return sendSuccess(res, { ...safeUser, token }, "Logged in successfully", 200);
