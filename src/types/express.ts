@@ -1,14 +1,15 @@
 import type { RequestHandler } from "express";
 
-declare global {
-    namespace Express {
-        interface Locals {
-            userId?: string;
-        }
-    }
-}
+// declare global {   // This makes every Express handler to know about res.locals.userId so even handlers with RequestHandler typings also have res.locals.userId
+//     namespace Express {
+//         interface Locals {
+//             userId?: string;
+//         }
+//     }
+// }
 
 export interface AuthLocals {
+    // This allows us to only apply res.locals.userId typing to certain handlers we are damn sure that will be used after authentication
     userId: string;
 }
 
