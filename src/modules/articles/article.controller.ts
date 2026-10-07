@@ -20,3 +20,7 @@ export const createArticle: ProtectedHandler<ArticleInput> = async (req, res) =>
 
     return sendSuccess(res, article, "Article created", 201);
 };
+
+export const updateArticle: ProtectedHandler<ArticleInput> = async (req, res)=>{
+    
+}
